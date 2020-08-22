@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const winston = require('winston');
 
 // Import routes
 const accountRoutes = require('../routes/account');
