@@ -11,7 +11,7 @@ module.exports = async () => {
       // useFindAndModify: false,
     });
     if (db) {
-      logger.log('info', db);
+      console.log(db);
     }
 
     logger.log('info', 'MongoDB Connected.....');

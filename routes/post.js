@@ -5,7 +5,9 @@ const { PostModel } = require('../models/post.model');
 const { catchError } = require('../utils/validation');
 
 router.get('/', async (req, res, next) => {
+  console.log('get all post');
   const post = await PostModel.find().exec();
+  console.log(post);
   return res.status(200).json({
     success: true,
     message: 'All Post',
@@ -23,6 +25,7 @@ router.post('/', async (req, res, next) => {
     }
     data['_id'] = new mongoose.Types.ObjectId();
     const saveData = await new PostModel(data).save();
+    console.log(saveData);
     if (saveData) {
       return res.status(200).json({
         success: true,
