@@ -1,0 +1,15 @@
+{
+  "env": {
+    "appUrl": "http://localhost",
+
+    "dbURI": "mongodb://localhost:27017/ShopApp",
+    "jwtSecret": "secret",
+    "tokenExpire": "4h",
+
+    "cloudName": "dvbtbsinu",
+    "cloudApiKey": "466342857739859",
+    "cloudSecretKey": "R56Pla4pQJkXOQZ7PMtjPHGNDzk",
+    "emailUser": "muritadohsodeeq97@gmail.com",
+    "emailPass": "sirunique1997"
+  }
+}
