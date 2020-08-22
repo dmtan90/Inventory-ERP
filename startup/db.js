@@ -6,10 +6,14 @@ module.exports = async () => {
     console.log(process.env.dbURI);
     const db = await mongoose.connect(process.env.dbURI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useUnifiedTopology: true,
       useCreateIndex: true,
       // useFindAndModify: false,
     });
+    if (db) {
+      logger.log('info', db);
+    }
+
     logger.log('info', 'MongoDB Connected.....');
   } catch (err) {
     logger.log('error', err.message);
