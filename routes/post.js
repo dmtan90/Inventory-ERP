@@ -4,6 +4,15 @@ const mongoose = require('mongoose');
 const { PostModel } = require('../models/post.model');
 const { catchError } = require('../utils/validation');
 
+router.get('/', async (req, res, next) => {
+  const post = await PostModel.find().exec();
+  return res.status(200).json({
+    success: true,
+    message: 'All Post',
+    post: post,
+  });
+});
+
 router.post('/', async (req, res, next) => {
   console.log(req.body);
 
