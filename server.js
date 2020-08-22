@@ -3,7 +3,6 @@
 // Init Express App
 const express = require('express');
 const http = require('http');
-const winston = require('winston');
 const dotenv = require('dotenv');
 const app = express();
 

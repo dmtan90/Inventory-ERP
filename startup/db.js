@@ -3,6 +3,7 @@ const { logger } = require('../startup/logger');
 // Setup App DB
 module.exports = async () => {
   try {
+    console.log(process.env.dbURI);
     const db = await mongoose.connect(process.env.dbURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

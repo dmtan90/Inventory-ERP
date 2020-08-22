@@ -1,10 +1,11 @@
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const winston = require('winston');
+const {} = require('../startup/logger');
 
 // Import routes
 const accountRoutes = require('../routes/account');
 const postRoutes = require('../routes/post');
+const logger = require('../startup/logger');
 
 module.exports = (app) => {
   // Setup App Config || Middlewares
@@ -44,7 +45,8 @@ module.exports = (app) => {
   });
   app.use((error, req, res, next) => {
     res.status(error.status || 500);
-    winston.error(error.message, error);
+    logger.log('info', error);
+    logger.error(error.message, error);
     res.json({
       error: {
         message: error.message,
