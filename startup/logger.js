@@ -28,15 +28,15 @@ const logger = winston.createLogger({
   exitOnError: false,
 });
 
-// process.on('unhandledRejection', (ex) => {
-//   logger.log('error', ex.message);
-//   logger.error(ex.message, ex);
-//   // throw ex;
-// });
-// process.on('uncaughtException', (ex) => {
-//   logger.log('error', ex.message);
-//   logger.error(ex.message, ex);
-// });
+process.on('unhandledRejection', (ex) => {
+  logger.log('error', ex.message);
+  logger.error(ex.message, ex);
+  // throw ex;
+});
+process.on('uncaughtException', (ex) => {
+  logger.log('error', ex.message);
+  logger.error(ex.message, ex);
+});
 
 if (process.env.NODE_ENV !== 'production') {
   logger.add(

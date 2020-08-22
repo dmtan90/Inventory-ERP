@@ -1,11 +1,10 @@
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const {} = require('../startup/logger');
+const { logger } = require('../startup/logger');
 
 // Import routes
 const accountRoutes = require('../routes/account');
 const postRoutes = require('../routes/post');
-const logger = require('../startup/logger');
 
 module.exports = (app) => {
   // Setup App Config || Middlewares
