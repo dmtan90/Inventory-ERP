@@ -27,12 +27,6 @@ module.exports = (app) => {
   });
 
   // Routes
-  // app.use('/', (req, res, next) => {
-  //   return res.status(200).json({
-  //     success: true,
-  //     message: 'Home Page',
-  //   });
-  // });
   app.use('/api/account', accountRoutes);
   app.use('/api/post', postRoutes);
 
