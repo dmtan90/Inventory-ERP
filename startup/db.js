@@ -10,9 +10,8 @@ module.exports = async () => {
       useCreateIndex: true,
       // useFindAndModify: false,
     });
-    if (db) {
-      console.log(db);
-    }
+
+    console.log(db);
 
     logger.log('info', 'MongoDB Connected.....');
   } catch (err) {
