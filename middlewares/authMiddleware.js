@@ -9,12 +9,12 @@ exports.accountAuth = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.jwtSecret);
-
     // set account ID as global variable
     res.locals.authID = decoded._id;
     req.authID = decoded._id;
     next();
   } catch (err) {
+    console.log(err);
     return res.status(401).json({
       message: 'Authorization Denied',
     });

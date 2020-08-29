@@ -1,18 +1,19 @@
 /* eslint-disable no-useless-return */
 /* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
-const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+// const nodemailer = require('nodemailer');
 
-let transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.emailUser,
-    pass: process.env.emailPass,
-  },
-});
+// let transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: process.env.emailUser,
+//     pass: process.env.emailPass,
+//   },
+// });
 
 const {
+  transporter,
   registerVerificationEmail,
   passwordResetEmail,
 } = require('../utils/email.messages');
@@ -25,7 +26,7 @@ const {
   passwordResetValidation,
   catchError,
 } = require('../utils/validation');
-const { AccountModel } = require('../models/account');
+const { AccountModel } = require('../models/account.model');
 const { getAccount } = require('../services/account');
 
 const validation = {
@@ -42,7 +43,8 @@ const handleValidation = async (body, res, type) => {
     // throw Error(error.details[0].message);
     console.log(error);
     return res.status(422).json({
-      success: 'Validation Errors',
+      success: false,
+      message: 'Validation Errors',
       errors: error.details[0].message,
     });
   }
@@ -93,7 +95,7 @@ module.exports.login = async (req, res, next) => {
     // Proceed to login
     if (account.isActive && account.isVerify && validPass) {
       // regenerate auth token for login and authorization
-      const authToken = account.generateAuthToken('7d');
+      const authToken = account.generateAuthToken(process.env.tokenExpire);
 
       return res.status(200).json({
         success: true,
@@ -102,7 +104,7 @@ module.exports.login = async (req, res, next) => {
       });
     }
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -134,12 +136,18 @@ module.exports.register = async (req, res, next) => {
     // save data
     const saveData = await new AccountModel(data).save();
     saveData['verifyToken'] = saveData.generateAuthToken('1h');
+    saveData['verifyPin'] = saveData.generateVerifyPin();
     const newdata = await new AccountModel(saveData).save();
     if (newdata) {
       // send verification mail
-      verifyUrl = `${process.env.appUrl}:${process.env.port}/api/account/verify/${newdata.verifyToken}`;
+      verifyUrl = `${process.env.appUrl}:${process.env.PORT}/api/account/verify/${newdata.verifyToken}`;
       await transporter.sendMail(
-        registerVerificationEmail(newdata.email, verifyUrl, 'Verify Account')
+        registerVerificationEmail(
+          newdata.email,
+          verifyUrl,
+          newdata.verifyPin,
+          'Verify Account'
+        )
       );
 
       return res.status(200).json({
@@ -148,7 +156,7 @@ module.exports.register = async (req, res, next) => {
       });
     }
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -192,7 +200,7 @@ module.exports.verifyRegistration = async (req, res, next) => {
     account.verifyToken = null;
 
     // regenerate auth token for login and authorization
-    const authToken = account.generateAuthToken('7d');
+    const authToken = account.generateAuthToken(process.env.tokenExpire);
 
     // update data
     await new AccountModel(account).save();
@@ -203,7 +211,7 @@ module.exports.verifyRegistration = async (req, res, next) => {
       token: authToken,
     });
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -238,12 +246,18 @@ module.exports.resendVerificationToken = async (req, res, next) => {
     // resend verification mail and update account token
     // regenerate token
     account.verifyToken = account.generateAuthToken('1h');
+    account.verifyPin = account.generateVerifyPin();
     // update account details with new token
-    await new AccountModel(account).save();
-    verifyUrl = `${process.env.appUrl}:${process.env.port}/api/account/verify/${account.verifyToken}`;
+    const saveData = await new AccountModel(account).save();
+    verifyUrl = `${process.env.appUrl}:${process.env.PORT}/api/account/verify/${saveData.verifyToken}`;
     //  resend verification mail
     await transporter.sendMail(
-      registerVerificationEmail(account.email, verifyUrl, 'Verify Account')
+      registerVerificationEmail(
+        saveData.email,
+        verifyUrl,
+        saveData.verifyPin,
+        'Verify Account'
+      )
     );
 
     return res.status(200).json({
@@ -252,7 +266,7 @@ module.exports.resendVerificationToken = async (req, res, next) => {
         "if we found an account associated with tha email address, we've sent verifcation instruction to the primary email addresson the account",
     });
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -260,15 +274,15 @@ module.exports.resendVerificationToken = async (req, res, next) => {
 module.exports.sendPasswordResetToken = async (req, res, next) => {
   console.log(req.body);
   // validate
-  const validate = await handleValidation(req.body, res, 'checkEmail');
+  let validate = await handleValidation(req.body, res, 'checkEmail');
 
   // return validate result
   if (validate != null) return validate;
 
-  try {
-    // get account details
-    const account = await getAccount({ email: req.body.email });
+  // get account details
+  let account = await getAccount({ email: req.body.email });
 
+  try {
     // email does not exist
     if (!account) {
       return res.status(200).json({
@@ -281,7 +295,7 @@ module.exports.sendPasswordResetToken = async (req, res, next) => {
     account.verifyToken = account.generateAuthToken('1h');
     // update account details with new token
     await new AccountModel(account).save();
-    verifyUrl = `${process.env.appUrl}:${process.env.port}/api/account/password-reset/${account.verifyToken}`;
+    verifyUrl = `${process.env.appUrl}:${process.env.PORT}/api/account/password-reset/${account.verifyToken}`;
     // send password reset token
     await transporter.sendMail(
       passwordResetEmail(account.email, verifyUrl, 'Password Reset')
@@ -293,7 +307,7 @@ module.exports.sendPasswordResetToken = async (req, res, next) => {
         "if we found an account associated with tha email address, we've sent verifcation instruction to the primary email addresson the account",
     });
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -361,7 +375,7 @@ module.exports.passwordReset = async (req, res, next) => {
       });
     }
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -376,7 +390,7 @@ module.exports.account = async (req, res, next) => {
       data: account,
     });
   } catch (err) {
-    catchError(err);
+    return catchError(err, res);
   }
 };
 
@@ -422,6 +436,6 @@ module.exports.changePassword = async (req, res, next) => {
       });
     }
   } catch (error) {
-    catchError(err);
+    return catchError(err, res);
   }
 };

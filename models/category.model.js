@@ -8,28 +8,38 @@ const categorySchema = new mongoose.Schema(
 
     isAvailable: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
+
+    date: { type: Date, default: Date.now },
   },
   {
     timestamps: true,
   }
 );
-export const CategoryModel = mongoose.model('Category', categorySchema);
+const CategoryModel = mongoose.model('Category', categorySchema);
 
 const subCategorySchema = new mongoose.Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
     subcategoryname: { type: String, required: true },
-    category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
 
     isAvailable: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
+
+    date: { type: Date, default: Date.now },
   },
   {
     timestamps: true,
   }
 );
 
-export const SubCategoryModel = mongoose.model(
-  'SubCategory',
-  subCategorySchema
-);
+const SubCategoryModel = mongoose.model('SubCategory', subCategorySchema);
+
+module.exports = {
+  CategoryModel,
+  SubCategoryModel,
+};

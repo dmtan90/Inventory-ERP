@@ -17,6 +17,6 @@ require('./startup/db')();
 require('./startup/routes')(app);
 
 // Setting up server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || process.env.port;
 const server = http.createServer(app);
 server.listen(port, () => logger.log('info', `Server Listening on ${port}`));

@@ -1,4 +1,4 @@
-const { AccountModel } = require('../models/account');
+const { AccountModel } = require('../models/account.model');
 const { catchError } = require('../utils/validation');
 
 // get account details
@@ -9,6 +9,6 @@ exports.getAccount = async (query) => {
       .exec();
     return account;
   } catch (err) {
-    catchError(err);
+    catchError(err, 'Account Not Found');
   }
 };

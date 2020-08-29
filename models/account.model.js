@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { token } = require('morgan');
-// const { function } = require('@hapi/joi');
 
 const accountSchema = new mongoose.Schema(
   {
@@ -18,6 +16,7 @@ const accountSchema = new mongoose.Schema(
     password: { type: String, required: true },
 
     verifyToken: { type: String },
+    verifyPin: { type: Number },
     isVerify: { type: Boolean, default: false },
 
     isActive: { type: Boolean, default: false },
@@ -42,11 +41,15 @@ accountSchema.methods.generateAuthToken = function (expiretime) {
     },
     process.env.jwtSecret,
     {
-      // expiresIn: process.env.tokenExpire,
       expiresIn: expiretime,
     }
   );
   return token;
+};
+
+accountSchema.methods.generateVerifyPin = function () {
+  const pin = Math.floor(1000 + Math.random() * 9000);
+  return pin;
 };
 
 exports.AccountModel = mongoose.model('Account', accountSchema);

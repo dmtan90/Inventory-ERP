@@ -16,8 +16,6 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-  console.log(req.body);
-
   try {
     let data = {};
     for (const key in req.body) {
@@ -25,7 +23,7 @@ router.post('/', async (req, res, next) => {
     }
     data['_id'] = new mongoose.Types.ObjectId();
     const saveData = await new PostModel(data).save();
-    console.log(saveData);
+
     if (saveData) {
       return res.status(200).json({
         success: true,

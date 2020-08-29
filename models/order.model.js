@@ -34,6 +34,7 @@ const orderSchema = new mongoose.Schema(
         'Declined',
       ],
     },
+    store: { type: Schema.Types.ObjectId, ref: 'Store', required: true },
     date: { type: Date, default: Date.now },
   },
   {
