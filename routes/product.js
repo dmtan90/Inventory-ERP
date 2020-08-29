@@ -9,7 +9,11 @@ const {
   updateProduct,
   getProduct,
   getProducts,
+  getAllProduct,
 } = require('../controllers/product.controller');
+
+// get all available product
+router.get('/', accountAuth, getAllProduct);
 
 router.get('/:storeId', accountAuth, storeAuth, getProducts);
 

@@ -32,6 +32,7 @@ const orderSchema = new mongoose.Schema(
         'In_Transit',
         'Delivered',
         'Declined',
+        'Cancel',
       ],
     },
     store: { type: Schema.Types.ObjectId, ref: 'Store', required: true },

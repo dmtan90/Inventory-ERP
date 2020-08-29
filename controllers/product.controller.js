@@ -116,4 +116,17 @@ module.exports.getProducts = async (req, res, next) => {
   }
 };
 
+module.exports.getAllProduct = async (req, res, next) => {
+  try {
+    const products = await ProductModel.find({
+      isDeleted: false,
+    })
+      .populate('store', ['storename'])
+      .sort({ date: -1 })
+      .exec();
+  } catch (err) {
+    return catchError(err, res);
+  }
+};
+
 module.exports.updateProduct = async (req, res, next) => {};
