@@ -24,7 +24,7 @@ exports.findById = async (id, res, model, msg) => {
         message: msg,
       });
     }
-    return get;
+    const authToken = account.generateAuthToken(process.env.tokenExpire);
   } catch (err) {
     return catchError(err, res, msg);
   }

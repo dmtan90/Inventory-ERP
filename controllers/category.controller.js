@@ -171,7 +171,7 @@ module.exports.getCategory = async (req, res, next) => {
   }
 
   // set error message
-  let msg = 'Size Not Found';
+  let msg = 'Category Not Found';
 
   // get category
   let category = await findOne(
